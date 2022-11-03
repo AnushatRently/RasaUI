@@ -7,6 +7,7 @@ function Basic(){
     const [chat,setChat] = useState([]);
     const [inputMessage,setInputMessage] = useState('');
     const [botTyping,setbotTyping] = useState(false);
+    const [host, setHost] = useState('http://localhost:5005');
 
     
    useEffect(()=>{
@@ -45,7 +46,7 @@ function Basic(){
         //chatData.push({sender : "user", sender_id : name, msg : msg});
         
 
-          await fetch('http://localhost:5005/webhooks/rest/webhook', {
+          await fetch(`${host}/webhooks/rest/webhook`, {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -60,8 +61,9 @@ function Basic(){
             if(response){
                 const temp = response[0];
                 const recipient_id = temp["recipient_id"];
-                const recipient_msg = temp["text"];        
-
+                const recipient_msg = temp["text"]; 
+                const url = temp?.custom.handoff_host || host;
+                if(url !== host) setHost(url);       
 
                 const response_temp = {sender: "bot",recipient_id : recipient_id,msg: recipient_msg};
                 setbotTyping(false);
